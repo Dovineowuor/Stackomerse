@@ -64,7 +64,7 @@ Stackomerse is built using the following technologies:
 - **Redux**: A predictable state container for JavaScript apps.
 - **Node.js**: A JavaScript runtime built on Chrome's V8 JavaScript engine.
 - **Express**: A minimal and flexible Node.js web application framework.
-- **MongoDB**: A NoSQL database for storing product and user data.
+- **PostgreSQL**: A powerful, open-source object-relational database system.
 
 ## Contact
 
@@ -73,3 +73,4 @@ For any inquiries or support, please contact the project maintainer:
 - **Name**: Dovine Owuor
 - **Email**: dovineowuor@example.com
 - **GitHub**: [dovineowuor](https://github.com/dovineowuor)
+
