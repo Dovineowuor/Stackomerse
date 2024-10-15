@@ -1,9 +1,9 @@
 // src/models/productModel.js
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
+const sequelize = require('../config/db'); // Correct import using require
 
 // Define the Product model
-const Product = sequelize.define('Product', {
+const Product = sequelize.sequelize.define('Product', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -51,9 +51,22 @@ const Product = sequelize.define('Product', {
     timestamps: true,
 });
 
-// Sync the Product model with the database
+/**
+ * Synchronize the Product model with the database.
+ * This function ensures that the Product table is created or updated
+ * to match the model definition. It also updates existing records
+ * with null categoryId to a default value.
+ */
 const syncProductModel = async () => {
     try {
+        // Update existing records with null categoryId to a default value
+        await sequelize.query(`
+            UPDATE products SET "categoryId" = (
+                SELECT id FROM categories LIMIT 1
+            ) WHERE "categoryId" IS NULL;
+        `);
+
+        // Sync the Product model
         await Product.sync({ alter: true });
         console.log('Product model synchronized successfully.');
     } catch (error) {

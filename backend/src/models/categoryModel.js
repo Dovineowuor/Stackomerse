@@ -1,9 +1,8 @@
-// src/models/categoryModel.js
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
+const sequelize = require('../config/db'); // Correct import
 
 // Define the Category model
-const Category = sequelize.define('Category', {
+const Category = sequelize.sequelize.define('Category', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -26,18 +25,17 @@ const Category = sequelize.define('Category', {
     timestamps: true,
 });
 
-// Sync the Category model with the database
+/**
+ * Synchronize the Category model with the database.
+ */
 const syncCategoryModel = async () => {
     try {
         await Category.sync({ alter: true });
         console.log('Category model synchronized successfully.');
     } catch (error) {
-        console.error('Error syncing Category model:', error.message);
+        console.error('Error synchronizing Category model:', error.message);
     }
 };
-
-// Sync the Category model with the database
-syncCategoryModel();
 
 module.exports = {
     Category,
