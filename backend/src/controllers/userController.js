@@ -1,6 +1,6 @@
-// src/controllers/userController.js
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const axios = require('axios'); // Import axios for external API requests
 const { User } = require('../models/userModel'); // Import the User model
 
 // Utility function to generate JWT token
@@ -17,13 +17,13 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: 'Username, email, and password are required' });
         }
 
-        const userExists = awaitUser.User.findOne({ where: { email } });
+        const userExists = await User.findOne({ where: { email } });
         if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = awaitUser.User.create({
+        const newUser = await User.create({
             username,
             email,
             password: hashedPassword,
@@ -49,27 +49,21 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Validate input data
         if (!email || !password) {
             return res.status(400).json({ message: 'Email and password are required' });
         }
 
-        // Find user by email
-        const user = awaitUser.User.findOne({ where: { email } });
+        const user = await User.findOne({ where: { email } });
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        // Check if password is correct
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        // Generate JWT token
         const token = generateToken(user.id);
-
-        // Respond with user info and token
         res.json({
             id: user.id,
             username: user.username,
@@ -83,19 +77,36 @@ const loginUser = async (req, res) => {
     }
 };
 
+// Example axios usage for external API (e.g., external authentication or notification system)
+const externalServiceRequest = async (userId) => {
+    try {
+        const response = await axios.post('https://api.external-service.com/notify', {
+            userId: userId,
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error calling external service:', error);
+        throw new Error('Failed to contact external service');
+    }
+};
+
 // Get user profile (protected route)
 const getUserProfile = async (req, res) => {
     try {
-        const user = awaitUser.User.findByPk(req.user.id); // Assume `req.user` is populated via authentication middleware
+        const user = await User.findByPk(req.user.id); // Assume `req.user` is populated via authentication middleware
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+
+        // Optional: Call an external service to get additional user data
+        const externalData = await externalServiceRequest(user.id);
 
         res.json({
             id: user.id,
             username: user.username,
             email: user.email,
             role: user.role,
+            externalData, // Including data from external service if needed
         });
     } catch (error) {
         console.error('Fetch user profile error:', error);
@@ -109,7 +120,7 @@ const updateUser = async (req, res) => {
     const { username, email, role } = req.body;
 
     try {
-        const [updated] = awaitUser.User.update(
+        const [updated] = await User.update(
             { username, email, role },
             { where: { id } }
         );
@@ -117,6 +128,9 @@ const updateUser = async (req, res) => {
         if (updated === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
+
+        // Example: Notify an external system of the update
+        await externalServiceRequest(id);
 
         res.json({ message: 'User updated successfully' });
     } catch (error) {
@@ -130,10 +144,13 @@ const deleteUser = async (req, res) => {
     const { id } = req.user; // Assuming req.user contains user details
 
     try {
-        const deleted = awaitUser.User.destroy({ where: { id } });
+        const deleted = await User.destroy({ where: { id } });
         if (deleted === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
+
+        // Example: Notify an external service that the user has been deleted
+        await externalServiceRequest(id);
 
         res.json({ message: 'User deleted successfully' });
     } catch (error) {

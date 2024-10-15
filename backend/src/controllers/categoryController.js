@@ -1,11 +1,19 @@
-const { Category } = require('../models/categoryModel');
+const axios = require('axios');
+
+// Set the base URL for your external API (replace with the actual API endpoint)
+const API_BASE_URL = 'http://localhost:5000/api'; // Example base URL
 
 // Create a new category
 const createCategory = async (req, res) => {
     const { name, description } = req.body;
+
     try {
-        const category = await Category.create({ name, description });
-        res.status(201).json(category);
+        const response = await axios.post(`${API_BASE_URL}/categories`, {
+            name,
+            description,
+        });
+
+        res.status(201).json(response.data);
     } catch (error) {
         console.error('Error creating category:', error);
         res.status(500).json({ message: 'Error creating category', error: error.message });
@@ -15,8 +23,8 @@ const createCategory = async (req, res) => {
 // Get all categories
 const getCategories = async (req, res) => {
     try {
-        const categories = await Category.findAll();
-        res.json(categories);
+        const response = await axios.get(`${API_BASE_URL}/categories`);
+        res.json(response.data);
     } catch (error) {
         console.error('Error fetching categories:', error);
         res.status(500).json({ message: 'Error fetching categories', error: error.message });
@@ -29,12 +37,16 @@ const updateCategory = async (req, res) => {
     const { name, description } = req.body;
 
     try {
-        const [updated] = await Category.update({ name, description }, { where: { id } });
-        if (!updated) {
+        const response = await axios.put(`${API_BASE_URL}/categories/${id}`, {
+            name,
+            description,
+        });
+
+        res.json({ message: 'Category updated successfully', data: response.data });
+    } catch (error) {
+        if (error.response && error.response.status === 404) {
             return res.status(404).json({ message: 'Category not found' });
         }
-        res.json({ message: 'Category updated successfully' });
-    } catch (error) {
         console.error('Error updating category:', error);
         res.status(500).json({ message: 'Error updating category', error: error.message });
     }
@@ -45,12 +57,12 @@ const deleteCategory = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const deleted = await Category.destroy({ where: { id } });
-        if (!deleted) {
-            return res.status(404).json({ message: 'Category not found' });
-        }
+        await axios.delete(`${API_BASE_URL}/categories/${id}`);
         res.json({ message: 'Category deleted successfully' });
     } catch (error) {
+        if (error.response && error.response.status === 404) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
         console.error('Error deleting category:', error);
         res.status(500).json({ message: 'Error deleting category', error: error.message });
     }
