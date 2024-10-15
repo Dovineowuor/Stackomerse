@@ -5,6 +5,12 @@ const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const categoryRoutes = require('./routes/categoryRoutes'); // Import category routes
 
+// set up environment variables
+require('dotenv').config();
+
+// const { syncModels } = require('./models/syncModels'); // Import the syncModels function
+
+// Create an Express application
 const app = express();
 const PORT = process.env.PORT || 5000; // Use environment variable or default to 5000
 
