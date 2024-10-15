@@ -1,9 +1,8 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
-const { v4: uuidv4 } = require('uuid');
+const sequelize = require('../config/db'); // Correct import
 
 // Define the User model
-const User = sequelize.define('User', {
+const User = sequelize.sequelize.define('User', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4, // Use Sequelize's UUIDV4 directly
