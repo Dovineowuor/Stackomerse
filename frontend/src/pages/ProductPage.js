@@ -61,11 +61,9 @@ const ProductPage = () => {
                                         />
                                     ))
                                 ) : (
-                                    <img
-                                        src="https://via.placeholder.com/400" // Placeholder for no image
-                                        alt="Placeholder"
-                                        className="img-fluid"
-                                    />
+                                    <img  className="product-image" 
+                                    src={product.imageUrl || process.env.PUBLIC_URL + '/red-tshirt.png'} // Use a placeholder if imageUrl is null
+                                    alt={product.name}  />
                                 )}
                             </div>
                         </div>
@@ -78,9 +76,12 @@ const ProductPage = () => {
                                 {stock > 0 ? 'Add to Cart' : 'Out of Stock'}
                             </button>
 
-                            {/* Size and Color Options */}
+                            {/* Size and Color Options */
+                            
+                            }
                             <div className="options mt-3">
                                 <div>
+                                    <div className='text-muted'> Product Options</div>
                                     <label htmlFor="size">Size:</label>
                                     <select id="size" className="form-control">
                                         <option value="">Select Size</option>
@@ -101,23 +102,28 @@ const ProductPage = () => {
                                     </select>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                            </div>
+                            </div>
+                            </div>
+                            </section>
 
-            <section className="reviews">
-                <div className="container">
-                    <h2>Reviews</h2>
-                    <div className="review_list">
-                        <ol>
-                            <li>
-                                <div className="avatar clearfix">
-                                    <img src="https://via.placeholder.com/40" className="img-fluid border-radius rounded-circle" alt="Reviewer" />
-                                </div>
-                                <div className="comment-content">
-                                    <span className="stars">
-                                        {/* Font Awesome Star Icons */}
+                            <section className="reviews">
+                                <div className="container">
+                                    <h2>Reviews</h2>
+                                    <div className="review_list">
+                                        <ol>
+                                            <li>
+                                                <div className="avatar clearfix w-25">
+                                                    <img 
+                                                        className="product-image" 
+                                                        src={product.imageUrl || process.env.PUBLIC_URL + '/red-tshirt.png'} // Use a placeholder if imageUrl is null
+                                                        alt={product.name} 
+                                                        style={{ width: '60px', height: '60px' }} // Custom style for image size
+                                                    />
+                                                </div>
+                                                <div className="comment-content">
+                                                    <span className="stars">
+                                                        {/* Font Awesome Star Icons */}
                                         <i className="fas fa-star"></i>
                                         <i className="fas fa-star"></i>
                                         <i className="fas fa-star"></i>
@@ -132,7 +138,7 @@ const ProductPage = () => {
                             </li>
                             <li>
                                 <div className="avatar clearfix">
-                                    <img src="https://via.placeholder.com/40" className="img-fluid border-radius rounded-circle" alt="Reviewer" />
+                                    <img src="/frontend/public/red-tshirt.png" className="img-fluid border-radius rounded-circle" alt="Reviewer" />
                                 </div>
                                 <div className="comment-content">
                                     <span className="stars">

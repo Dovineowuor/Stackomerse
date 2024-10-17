@@ -6,10 +6,10 @@ const ProductCard = ({ product }) => {
     <article className="col-md-6 col-lg-4 col-xl-3">
       <div id={`product-${product.id}`} className="single-product">
         <div className="part-1">
-          <img 
-            className="product-image" 
-            src={product.imageUrl || 'https://via.placeholder.com/150'} // Use a placeholder if imageUrl is null
-            alt={product.name} 
+            <img 
+              className="product-image" 
+              src={product.imageUrl || process.env.PUBLIC_URL + '/red-tshirt.png'} // Use a placeholder if imageUrl is null
+              alt={product.name} 
           />
           <ul className='container-fluid d-flex flex-row justify-content-center align-items-center pl-0'>
             <li><Link to={`/cart/add/${product.id}`}><i className="fas fa-shopping-cart"></i></Link></li>
