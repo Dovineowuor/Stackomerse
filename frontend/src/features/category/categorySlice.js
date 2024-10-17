@@ -1,31 +1,34 @@
-// frontend/src/features/category/categorySlice.js
-import { createSlice } from '@reduxjs/toolkit';
+// src/features/category/categorySlice.js
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { fetchCategoriesAPI } from '../../api/categoryApi';
 
-const initialState = {
-  categories: [],
-  isLoading: false,
-  error: null,
-};
-
-const categorySlice = createSlice({
-  name: 'category',
-  initialState,
-  reducers: {
-    fetchCategoriesStart(state) {
-      state.isLoading = true;
-      state.error = null;
-    },
-    fetchCategoriesSuccess(state, action) {
-      state.isLoading = false;
-      state.categories = action.payload;
-    },
-    fetchCategoriesFail(state, action) {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-  },
+export const fetchCategories = createAsyncThunk('categories/fetchCategories', async () => {
+    const response = await fetchCategoriesAPI();
+    return response.data;
 });
 
-export const { fetchCategoriesStart, fetchCategoriesSuccess, fetchCategoriesFail } = categorySlice.actions;
+const categorySlice = createSlice({
+    name: 'categories',
+    initialState: {
+        items: [],
+        loading: false,
+        error: null,
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchCategories.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchCategories.fulfilled, (state, action) => {
+                state.loading = false;
+                state.items = action.payload;
+            })
+            .addCase(fetchCategories.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
+    },
+});
 
 export default categorySlice.reducer;

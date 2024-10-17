@@ -8,6 +8,8 @@ import CartPage from './pages/CartPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
+import CategoryPage from './pages/CategoryPage'; // Import your CategoryPage component
+import CheckoutPage from './pages/CheckoutPage'; // Import your CheckoutPage component
 
 function App() {
   return (
@@ -22,9 +24,10 @@ function App() {
           <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path = "/register" element = {<RegisterPage />} />
-          <Route path = "/profile" element = {<ProfilePage />} />
-          
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/category/:id" element={<CategoryPage />} /> {/* Add CategoryPage route */}
+          <Route path="/checkout" element={<CheckoutPage />} /> {/* Fix incorrect prop */}
         </Routes>
       </main>
       <Footer />

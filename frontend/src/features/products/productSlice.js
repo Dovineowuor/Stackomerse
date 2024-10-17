@@ -1,31 +1,39 @@
-// frontend/src/features/products/productSlice.js
-import { createSlice } from '@reduxjs/toolkit';
+// src/features/products/productSlice.js
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { fetchProductsAPI, addProductAPI } from '../../api/productApi';
 
-const initialState = {
-  products: [],
-  isLoading: false,
-  error: null,
-};
-
-const productSlice = createSlice({
-  name: 'product',
-  initialState,
-  reducers: {
-    fetchProductsStart(state) {
-      state.isLoading = true;
-      state.error = null;
-    },
-    fetchProductsSuccess(state, action) {
-      state.isLoading = false;
-      state.products = action.payload;
-    },
-    fetchProductsFail(state, action) {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-  },
+export const fetchProducts = createAsyncThunk('products/fetchProducts', async () => {
+    const response = await fetchProductsAPI();
+    return response.data;
 });
 
-export const { fetchProductsStart, fetchProductsSuccess, fetchProductsFail } = productSlice.actions;
+export const addProduct = createAsyncThunk('products/addProduct', async (product) => {
+    const response = await addProductAPI(product);
+    return response.data;
+});
+
+const productSlice = createSlice({
+    name: 'products',
+    initialState: {
+        items: [],
+        loading: false,
+        error: null,
+    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchProducts.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchProducts.fulfilled, (state, action) => {
+                state.loading = false;
+                state.items = action.payload;
+            })
+            .addCase(fetchProducts.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
+            });
+    },
+});
 
 export default productSlice.reducer;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../redux/actions/userActions';
 import { useNavigate } from 'react-router-dom';
@@ -23,18 +24,24 @@ const LoginPage = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    // Dispatch login action
     dispatch(login(email, password));
   };
 
   return (
     <div className="container mt-5">
       <h1 className="mb-4">Sign In</h1>
-      
-      {error && <div className="alert alert-danger">{error}</div>}
-      
+
+      {/* Error handling */}
+      {error && (
+        <div className="alert alert-danger">
+          {typeof error === 'string' ? error : error.message || 'An error occurred'}
+        </div>
+      )}
+
       {loading ? (
-        <div>Loading...</div>
+        <div className="spinner-border" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
       ) : (
         <form onSubmit={submitHandler}>
           <div className="form-group">
@@ -46,9 +53,10 @@ const LoginPage = () => {
               placeholder="Enter email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
@@ -58,16 +66,25 @@ const LoginPage = () => {
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
-          
-          <button type="submit" className="btn btn-primary mt-3">
+
+          <button href="http://localhost:5000/api/user/login" type="submit" className="btn btn-primary mt-3">
             Sign In
           </button>
         </form>
       )}
     </div>
   );
+};
+
+LoginPage.propTypes = {
+  userLogin: PropTypes.shape({
+    loading: PropTypes.bool,
+    error: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    userInfo: PropTypes.object,
+  }),
 };
 
 export default LoginPage;
