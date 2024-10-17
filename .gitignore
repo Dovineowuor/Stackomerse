@@ -49,3 +49,4 @@ redux/
 
 # misc
 .DS_Store
+create_categories.sh
