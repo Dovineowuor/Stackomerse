@@ -1,8 +1,11 @@
-// src/models/productModel.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db'); // Correct import using require
+const sequelize = require('../config/db'); // Correct import
+const { Category } = require('./categoryModel'); // Import Category model
 
-// Define the Product model
+/**
+ * Product model definition.
+ * Represents a product in the application with a foreign key reference to Category.
+ */
 const Product = sequelize.sequelize.define('Product', {
     id: {
         type: DataTypes.UUID,
@@ -41,43 +44,26 @@ const Product = sequelize.sequelize.define('Product', {
     categoryId: {
         type: DataTypes.UUID,
         references: {
-            model: 'categories', // Name of the target model
-            key: 'id', // Key in the target model
+            model: Category,
+            key: 'id',
         },
         allowNull: false,
     },
 }, {
     tableName: 'products',
-    timestamps: true,
+    timestamps: true, // Automatically manages createdAt and updatedAt fields
 });
 
-/**
- * Synchronize the Product model with the database.
- * This function ensures that the Product table is created or updated
- * to match the model definition. It also updates existing records
- * with null categoryId to a default value.
- */
-const syncProductModel = async () => {
-    try {
-        // Update existing records with null categoryId to a default value
-        await sequelize.query(`
-            UPDATE products SET "categoryId" = (
-                SELECT id FROM categories LIMIT 1
-            ) WHERE "categoryId" IS NULL;
-        `);
+// Define the relationship between Product and Category
+Product.belongsTo(Category, { foreignKey: 'categoryId' });
 
-        // Sync the Product model
-        await Product.sync({ alter: true });
-        console.log('Product model synchronized successfully.');
-    } catch (error) {
-        console.error('Error syncing Product model:', error.message);
-    }
+// Define the sync function
+const syncModel = async () => {
+    await Product.sync();
 };
 
-// Sync the Product model with the database
-syncProductModel();
-
+// Export the Product model and synchronization function
 module.exports = {
     Product,
-    syncProductModel,
+    syncModel,
 };

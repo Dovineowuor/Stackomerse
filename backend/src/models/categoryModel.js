@@ -1,7 +1,10 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db'); // Correct import
 
-// Define the Category model
+/**
+ * Category model definition.
+ * Represents a product category in the application.
+ */
 const Category = sequelize.sequelize.define('Category', {
     id: {
         type: DataTypes.UUID,
@@ -22,22 +25,16 @@ const Category = sequelize.sequelize.define('Category', {
     },
 }, {
     tableName: 'categories',
-    timestamps: true,
+    timestamps: true, // Automatically manages createdAt and updatedAt fields
 });
 
-/**
- * Synchronize the Category model with the database.
- */
-const syncCategoryModel = async () => {
-    try {
-        await Category.sync({ alter: true });
-        console.log('Category model synchronized successfully.');
-    } catch (error) {
-        console.error('Error synchronizing Category model:', error.message);
-    }
+// Define the sync function
+const syncModel = async () => {
+    await Category.sync();
 };
 
+// Export the Category model and synchronization function
 module.exports = {
     Category,
-    syncCategoryModel,
+    syncModel,
 };

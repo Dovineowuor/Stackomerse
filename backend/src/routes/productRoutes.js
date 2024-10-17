@@ -1,36 +1,44 @@
 const express = require('express');
 const router = express.Router();
-const productController = require('../controllers/productController'); // Ensure this path is correct
-const { authenticate } = require('../middleware/authMiddleware');
+const productController = require('../controllers/productController'); // Ensure correct path to the controller
 
-// Route to get all products (with optional pagination and filtering)
+// Route for creating a new product
+router.post('/', productController.createProduct);
+
+// Route for retrieving all products with optional pagination and filtering
 router.get('/', productController.getAllProducts);
 
-// Route to get all products specifically for the shop
-router.get('/shop', productController.getAllProducts);
-
-// Route to get a product by its ID
+// Route for retrieving a single product by ID
 router.get('/:id', productController.getProductById);
 
-// Route to create a new product (protected route)
-router.post('/', authenticate, productController.createProduct);
+// Route for retrieving products by category ID
+router.get('/category/:categoryId', productController.getProductByCategory);
 
-// Route to update a product by its ID (protected route)
-router.put('/:id', authenticate, productController.updateProduct);
+// Route for retrieving products by category name
+router.get('/category/:categoryName', productController.getProductByCategory);
 
-// Route to delete a product by its ID (protected route)
-router.delete('/:id', authenticate, productController.deleteProduct);
+// Route for updating a product by ID
+router.put('/:id', productController.updateProduct);
 
-// Optional routes for reviews (if implemented)
-// router.post('/:id/review', authenticate, productController.createProductReview);
-// router.put('/:id/review', authenticate, productController.updateProductReview);
-// router.delete('/:id/review', authenticate, productController.deleteProductReview);
+// Route for deleting a product by ID
+router.delete('/:id', productController.deleteProduct);
 
-// Optional routes for additional functionalities (if needed)
-// router.get('/top', productController.getTopProducts);
-// router.get('/category/:category', productController.getProductsByCategory);
-// router.get('/brand/:brand', productController.getProductsByBrand);
-// router.get('/category/:category/brand/:brand', productController.getProductsByCategoryAndBrand);
+// Route for retrieving top-rated products
+router.get('/top', productController.getTopProducts);
 
-// Export the router
+// Route for adding a review for a product
+router.post('/:id/reviews', productController.createProductReview);
+
+// Route for retrieving all reviews for a specific product
+router.get('/:id/reviews', productController.getProductReviews);
+
+// Route for retrieving a specific review for a product by review ID
+router.get('/:id/reviews/:reviewId', productController.getProductReviewById);
+
+// Route for updating a specific review for a product
+router.put('/:id/reviews/:reviewId', productController.updateProductReview);
+
+// Route for deleting a specific review for a product
+router.delete('/:id/reviews/:reviewId', productController.deleteProductReview);
+
 module.exports = router;

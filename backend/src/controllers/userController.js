@@ -17,17 +17,24 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: 'Username, email, and password are required' });
         }
 
+        // Check if user already exists
         const userExists = await User.findOne({ where: { email } });
         if (userExists) {
-            return res.status(400).json({ message: 'User already exists' });
+            return res.status(400).json({ message: 'Invalid credentials' }); // Generic message
         }
 
+        // Password strength check (optional)
+        if (password.length < 8) { // Example check: minimum 8 characters
+            return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+        }
+
+        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await User.create({
             username,
             email,
             password: hashedPassword,
-            role: role || 'shopper',
+            role: role || 'shopper', // Default role
         });
 
         const token = generateToken(newUser.id);
@@ -40,7 +47,7 @@ const registerUser = async (req, res) => {
         });
     } catch (error) {
         console.error('Registration error:', error);
-        res.status(500).json({ message: 'Error registering user', error: error.message });
+        res.status(500).json({ message: 'Error registering user' }); // Avoid exposing error details
     }
 };
 
@@ -53,14 +60,16 @@ const loginUser = async (req, res) => {
             return res.status(400).json({ message: 'Email and password are required' });
         }
 
+        // Find user by email
         const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.status(400).json({ message: 'Invalid credentials' });
+            return res.status(400).json({ message: 'Invalid credentials' }); // Generic message
         }
 
+        // Check if password matches
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid credentials' });
+            return res.status(400).json({ message: 'Invalid credentials' }); // Generic message
         }
 
         const token = generateToken(user.id);
@@ -73,20 +82,19 @@ const loginUser = async (req, res) => {
         });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ message: 'Error logging in', error: error.message });
+        res.status(500).json({ message: 'Error logging in' }); // Avoid exposing error details
     }
 };
 
-// Example axios usage for external API (e.g., external authentication or notification system)
+
+// External service request (example)
 const externalServiceRequest = async (userId) => {
     try {
-        const response = await axios.post('https://api.external-service.com/notify', {
-            userId: userId,
-        });
+        const response = await axios.get(`http://localhost:5000/api/user/${userId}`);
         return response.data;
     } catch (error) {
-        console.error('Error calling external service:', error);
-        throw new Error('Failed to contact external service');
+        console.error('External service request error:', error);
+        return null;
     }
 };
 
@@ -159,6 +167,25 @@ const deleteUser = async (req, res) => {
     }
 };
 
+// Notify user of an action (e.g., account deletion)
+const notifyUser = async (userId) => {
+    try {
+        const user = await User.findByPk(userId);
+        if (!user) {
+            console.error('User not found');
+            return;
+        }
+
+        // Example: Send a notification email to the user
+        await sendNotificationEmail(user.email, 'Your account has been deleted');
+
+        return true;
+    } catch (error) {
+        console.error('Notify user error:', error);
+        return false;
+    }
+};
+
 // Export the controller functions
 module.exports = {
     registerUser,
@@ -166,4 +193,5 @@ module.exports = {
     getUserProfile,
     updateUser,
     deleteUser,
+    notifyUser, // Make sure to export the notifyUser function
 };
